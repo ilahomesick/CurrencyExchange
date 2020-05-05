@@ -14,12 +14,12 @@ import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.DiffUtil
 
-
 class ListAdapter(context: Context): RecyclerView.Adapter<CurrencyViewHolder>() {
 
     private var rates:LinkedHashMap<String, Double> = LinkedHashMap<String, Double>()
     private val context: Context
     private var layoutInflater: LayoutInflater? = null
+    private var conversionRate = 1.0
 
 
     init {
@@ -33,10 +33,15 @@ class ListAdapter(context: Context): RecyclerView.Adapter<CurrencyViewHolder>() 
         var keys = rates.keys.toTypedArray()
         var key = keys[position]
         var amount = holder.amount
-        holder.bind(key,rates[key])
+        var number = if (position == 0 && key.equals("EUR")) this.conversionRate else (rates[key]!! * this.conversionRate).round(4)
+        holder.bind(key, number)
         amount!!.setOnEditorActionListener { v, actionId, event ->
             if(actionId == EditorInfo.IME_ACTION_DONE){
-                updateAmount(amount.text.toString().toDoubleOrNull(),rates[key])
+                var newText = amount!!.text.toString().toDoubleOrNull()
+                if(position == 0 && newText != null){
+                    this.conversionRate = newText
+                }
+                updateAmount(newText,rates[key])
                 true
             } else {
                 false
@@ -63,16 +68,20 @@ class ListAdapter(context: Context): RecyclerView.Adapter<CurrencyViewHolder>() 
     fun updateAmount(newAmount: Double?, oldAmount: Double?){
         var newValues = this.rates.toMutableMap()
         this.rates.forEach { k,v ->
-            var actual = v
-            var newValue = (actual * newAmount!!)/ oldAmount!!
-            newValues[k] = newValue.round(4)
+                var actual = v
+                var newValue = (actual * newAmount!!)/ oldAmount!!
+                newValues[k] = newValue
+
+
         }
         this.rates = newValues as LinkedHashMap<String, Double>
         //Handler().postDelayed({ notifyDataSetChanged() }, 1000)
-        notifyDataSetChanged()
+        refreshList(rates)
     }
 
     fun refreshList(rates: LinkedHashMap<String, Double>) {
+
+
         var diffCallback = RatesDiffCallback(this.rates,rates)
         var diffResult = DiffUtil.calculateDiff(diffCallback)
 
