@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/cell_curren">
+    android:background="@drawable/cell_curren"
+    android:clickable="false"
+    android:focusable="false">
 
     <ImageView
         android:id="@+id/listImage"
@@ -12,7 +14,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_margin="10dp"
-        android:background="#ffcccccc" />
+        android:background="#FFFFFF" />
 
     <TextView
         android:id="@+id/currencyTitle"

@@ -4,27 +4,29 @@ import android.os.AsyncTask
 import androidx.annotation.MainThread
 import com.beust.klaxon.Klaxon
 import java.net.URL
-import kotlin.collections.LinkedHashMap
 
-class RetrieveRateTask(adapter: ListAdapter): AsyncTask<Any, Any, Any>() {
+class RetrieveRateTask(adapter: ListAdapter, callback: () -> Unit) : AsyncTask<Any, Any, Any>() {
 
     private var url = "https://hiring.revolut.codes/api/android/latest?base=EUR"
     private var adapter: ListAdapter
+    private var hideLoadercallback: () -> Unit
 
     init {
         this.adapter = adapter
+        this.hideLoadercallback = callback
     }
 
     override fun doInBackground(vararg params: Any): Any {
 
-        return URL(url).readText()
+        var json = Klaxon().parse<Rates>(URL(url).readText())
+        json!!.addEuro()
+        return json.rates
     }
 
     @MainThread
     override fun onPostExecute(result: Any?) {
-        var json = Klaxon().parse<Rates>(result as String)
-        json!!.addEuro()
-        adapter.refreshList(json.rates)
+        adapter.refreshList(result as LinkedHashMap<String, Double>)
+        hideLoadercallback()
     }
 
 

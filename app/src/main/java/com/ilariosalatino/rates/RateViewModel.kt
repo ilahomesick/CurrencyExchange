@@ -1,26 +1,25 @@
 package com.ilariosalatino.rates
 
 import android.os.Handler
-import androidx.core.os.HandlerCompat.postDelayed
 
 
+class RateViewModel {
 
-class RateViewModel() {
 
-
-    fun retrieveRates(listAdapter: ListAdapter){
+    fun retrieveRates(listAdapter: ListAdapter, hideLoaderCallback: () -> Unit) {
         val handler = Handler()
         val retrieve = object : Runnable {
             override fun run() {
-                // Do something here on the main thread
 
-                RetrieveRateTask(listAdapter).execute()
-                // Repeat this the same runnable code block again another 2 seconds
-                // 'this' is referencing the Runnable object
+                RetrieveRateTask(listAdapter) {
+                    hideLoaderCallback()
+                }.execute()
+
+                //Running the task for retrieving rates every second
                 handler.postDelayed(this, 1000)
             }
         }
-        handler.post(retrieve);
+        handler.post(retrieve)
 
     }
 }

@@ -29,9 +29,6 @@ class RatesDiffCallback(oldRates: LinkedHashMap<String, Double>, newRates: Linke
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        if(oldItemPosition==0){
-            return true
-        }
         return oldRates[oldKeys[oldItemPosition]] == newRates[newKeys[newItemPosition]]
     }
 }

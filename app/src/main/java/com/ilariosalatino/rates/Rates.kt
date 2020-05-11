@@ -2,7 +2,8 @@ package com.ilariosalatino.rates
 
 import java.util.*
 
-class Rates(rates: LinkedHashMap<String, Double>) {
+//Model for parsing the JSON
+class Rates {
 
     var rates:  LinkedHashMap<String, Double>
 
